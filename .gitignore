@@ -1,0 +1,13 @@
+# Données brutes (pas besoin sur GitHub)
+loan_data.csv
+df_model.csv
+data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Streamlit
+.streamlit/secrets.toml
