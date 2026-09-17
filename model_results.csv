@@ -1,0 +1,4 @@
+Modèle,Accuracy,Précision (N),Rappel (N),F1-Score (N),ROC-AUC
+Régression Logistique,0.862,0.957,0.579,0.721,0.852
+Arbre de Décision,0.732,0.558,0.632,0.593,0.704
+Random Forest,0.837,0.781,0.658,0.714,0.806
