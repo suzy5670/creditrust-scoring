@@ -20,7 +20,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Choix du modèle",
 ])
 
-# ============ Slide 1 ============
 with tab1:
     st.subheader("Quelle est l'ampleur du risque de refus chez CrediTrust aujourd'hui ?")
     st.caption("Taux de refus global, nombre de dossiers")
@@ -39,10 +38,7 @@ with tab1:
     barres = ax.bar(labels, valeurs, color=couleurs, width=0.5)
     pourcentages = [round(100 - kpis["taux_refus_global"], 1), kpis["taux_refus_global"]]
     for barre, valeur, pct, couleur in zip(barres, valeurs, pourcentages, couleurs):
-        ax.text(barre.get_x() + barre.get_width()/2, barre.get_height() + 10,
-                 f"{valeur}\n({pct}%)", ha="center", va="bottom",
-                 fontsize=12, fontweight="bold",
-                 bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor=couleur))
+        ax.text(barre.get_x() + barre.get_width()/2, barre.get_height() + 10, f"{valeur}\n({pct}%)", ha="center", va="bottom", fontsize=12, fontweight="bold", bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor=couleur))
     ax.set_ylabel("Nombre de dossiers")
     ax.set_ylim(0, max(valeurs) * 1.25)
     ax.spines["top"].set_visible(False)
@@ -50,7 +46,6 @@ with tab1:
     ax.grid(axis="y", linestyle="--", alpha=0.3)
     st.pyplot(fig)
 
-# ============ Slide 2 ============
 with tab2:
     st.subheader("L'historique de crédit doit-il rester le critère prioritaire dans la décision d'octroi ?")
     st.caption("Taux de refus par historique de crédit")
@@ -72,7 +67,6 @@ with tab2:
         ax.set_title(noms_credit[row["Credit_History"]], fontsize=9)
     st.pyplot(fig)
 
-# ============ Slide 3 ============
 with tab3:
     st.subheader("Existe-t-il une inégalité géographique dans l'octroi de crédit ?")
     st.caption("Taux de refus par zone géographique")
@@ -94,17 +88,12 @@ with tab3:
     ax.spines["right"].set_visible(False)
     ax.grid(axis="x", linestyle="--", alpha=0.3)
 
-    definitions = {
-        "Rural": "zone rurale — campagne, petites localités",
-        "Semiurban": "zone semi-urbaine — villes moyennes, périphérie",
-        "Urban": "zone urbaine — grandes villes"
-    }
+    definitions = {"Rural": "zone rurale — campagne, petites localités", "Semiurban": "zone semi-urbaine — villes moyennes, périphérie", "Urban": "zone urbaine — grandes villes"}
     patches = [mpatches.Patch(color=couleur, label=f"{z} : {definitions[z]}") for z, couleur in zip(zone.index, couleurs_zones)]
     ax.legend(handles=patches, loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False, fontsize=11)
     plt.tight_layout()
     st.pyplot(fig)
 
-# ============ Slide 4 ============
 with tab4:
     st.subheader("Le niveau d'éducation influence-t-il la décision, et est-ce un biais à surveiller ?")
     st.caption("Taux de refus par niveau d'éducation")
@@ -121,7 +110,6 @@ with tab4:
     ax.spines["right"].set_visible(False)
     st.pyplot(fig)
 
-# ============ Slide 5 ============
 with tab5:
     st.subheader("Quel modèle retenir pour automatiser une partie du scoring ?")
     st.caption("Comparaison des modèles de classification")
@@ -174,17 +162,53 @@ with tab5:
     ax2.set_title("Vue d'ensemble sur les 5 métriques", fontsize=24, fontweight="bold", pad=35)
     ax2.legend(loc="upper right", bbox_to_anchor=(1.45, 1.15), frameon=False, fontsize=17)
 
-    definitions_txt = (
-        "Accuracy : % de dossiers bien classés au total (accordés + refusés)\n"
-        "Précision (N) : quand le modèle prédit \"refusé\", part de fois où c'est vraiment le cas\n"
-        "Rappel (N) : part des dossiers réellement à risque que le modèle parvient à détecter\n"
-        "F1-Score (N) : équilibre entre Précision et Rappel sur la classe refus, en une seule note\n"
-        "ROC-AUC : capacité globale du modèle à distinguer un dossier à risque d'un dossier sain"
-    )
-    fig.text(0.72, 0.02, definitions_txt, ha="center", va="bottom", fontsize=16, color="#333333",
-              bbox=dict(boxstyle="round,pad=0.8", facecolor="#f9f9f7", edgecolor="#c3c2b7", linewidth=0.8), linespacing=1.9)
+    definitions_txt = "Accuracy : % de dossiers bien classés au total (accordés + refusés)\nPrécision (N) : quand le modèle prédit refusé, part de fois où c'est vraiment le cas\nRappel (N) : part des dossiers réellement à risque que le modèle parvient à détecter\nF1-Score (N) : équilibre entre Précision et Rappel sur la classe refus, en une seule note\nROC-AUC : capacité globale du modèle à distinguer un dossier à risque d'un dossier sain"
+    fig.text(0.72, 0.02, definitions_txt, ha="center", va="bottom", fontsize=16, color="#333333", bbox=dict(boxstyle="round,pad=0.8", facecolor="#f9f9f7", edgecolor="#c3c2b7", linewidth=0.8), linespacing=1.9)
 
     plt.subplots_adjust(bottom=0.28, wspace=0.35)
     st.pyplot(fig)
 
     st.success("**Modèle retenu : Random Forest** — meilleur Rappel (65,8 %).")
+
+    st.divider()
+    st.subheader("Quelles sont les limites du modèle retenu, à assumer honnêtement ?")
+    st.caption("Matrice de confusion du modèle final (Random Forest)")
+
+    conf = charger("confusion.csv").iloc[0]
+    tn = conf["tn"]
+    fp = conf["fp"]
+    fn = conf["fn"]
+    tp = conf["tp"]
+    total = tn + fp + fn + tp
+
+    couleur_accord_ok = "#1F4E79"
+    couleur_refus_injuste = "#898781"
+    couleur_alerte = "#E8A33D"
+    couleur_refus_ok = "#2a78d6"
+
+    fig2, ax3 = plt.subplots(figsize=(9, 7.5))
+    grille_couleurs = [[couleur_accord_ok, couleur_refus_injuste], [couleur_alerte, couleur_refus_ok]]
+    texte_00 = "Accord Légitime\n\n" + str(tp) + " clients\n(" + str(round(tp/total*100, 1)) + "%)"
+    texte_01 = "Refus Injustifié\n(Manque à gagner)\n\n" + str(fn) + " clients\n(" + str(round(fn/total*100, 1)) + "%)"
+    texte_10 = "Accorde a tort\n(Client a risque)\n\n" + str(fp) + " clients\n(" + str(round(fp/total*100, 1)) + "%)"
+    texte_11 = "Refus Justifie\n(Risque evite)\n\n" + str(tn) + " clients\n(" + str(round(tn/total*100, 1)) + "%)"
+    grille_texte = [[texte_00, texte_01], [texte_10, texte_11]]
+
+    for i in range(2):
+        for j in range(2):
+            ax3.add_patch(plt.Rectangle((j, 1 - i), 1, 1, facecolor=grille_couleurs[i][j], edgecolor="white", linewidth=3))
+            ax3.text(j + 0.5, 1 - i + 0.5, grille_texte[i][j], ha="center", va="center", fontsize=13, fontweight="bold", color="white")
+
+    ax3.set_xlim(0, 2)
+    ax3.set_ylim(0, 2)
+    ax3.set_xticks([0.5, 1.5])
+    ax3.set_xticklabels(["Predit : Accorde", "Predit : Refuse"], fontsize=11)
+    ax3.set_yticks([0.5, 1.5])
+    ax3.set_yticklabels(["Realite : MAUVAIS PAYEUR (N)", "Realite : BON PAYEUR (Y)"], fontsize=11)
+    ax3.tick_params(length=0)
+    for spine in ax3.spines.values():
+        spine.set_visible(False)
+    st.pyplot(fig2)
+
+    message_alerte = str(int(fp)) + " clients a risque sont accordes a tort (" + str(round(fp/total*100, 1)) + "%) - le vrai danger financier pour la banque, sur " + str(int(total)) + " dossiers de test."
+    st.warning(message_alerte)
