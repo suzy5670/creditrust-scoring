@@ -13,17 +13,17 @@ def charger(fichier):
 kpis = charger("kpis.csv").iloc[0]
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "1. Ampleur du risque",
-    "2. Historique de crédit",
-    "3. Zone géographique",
-    "4. Diplôme",
-    "5. Choix du modèle",
+    "Ampleur du risque",
+    "Historique de crédit",
+    "Zone géographique",
+    "Diplôme",
+    "Choix du modèle",
 ])
 
 # ============ Slide 1 ============
 with tab1:
     st.subheader("Quelle est l'ampleur du risque de refus chez CrediTrust aujourd'hui ?")
-    st.caption("KPI 1 + 2 — Taux de refus global, nombre de dossiers")
+    st.caption("Taux de refus global, nombre de dossiers")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -53,7 +53,7 @@ with tab1:
 # ============ Slide 2 ============
 with tab2:
     st.subheader("L'historique de crédit doit-il rester le critère prioritaire dans la décision d'octroi ?")
-    st.caption("KPI 3 + 4 — Taux de refus par Credit_History")
+    st.caption("Taux de refus par historique de crédit")
 
     col3, col4 = st.columns(2)
     with col3:
@@ -75,7 +75,7 @@ with tab2:
 # ============ Slide 3 ============
 with tab3:
     st.subheader("Existe-t-il une inégalité géographique dans l'octroi de crédit ?")
-    st.caption("KPI 5 — Taux de refus par Property_Area")
+    st.caption("Taux de refus par zone géographique")
 
     zone = charger("graph_zone.csv").set_index("Property_Area")["taux_refus"].sort_values()
     taux_refus_global = kpis["taux_refus_global"]
@@ -107,7 +107,7 @@ with tab3:
 # ============ Slide 4 ============
 with tab4:
     st.subheader("Le niveau d'éducation influence-t-il la décision, et est-ce un biais à surveiller ?")
-    st.caption("KPI 6 — Taux de refus par Education")
+    st.caption("Taux de refus par niveau d'éducation")
 
     fig, ax = plt.subplots(figsize=(6,3.5))
     edu = charger("graph_education.csv")
@@ -124,7 +124,7 @@ with tab4:
 # ============ Slide 5 ============
 with tab5:
     st.subheader("Quel modèle retenir pour automatiser une partie du scoring ?")
-    st.caption("Tableau comparatif des 3 modèles")
+    st.caption("Comparaison des modèles de classification")
 
     resultats = charger("model_results.csv")
     st.dataframe(resultats, hide_index=True)
