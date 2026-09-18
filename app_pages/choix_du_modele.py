@@ -26,7 +26,7 @@ with tab1:
     auc = resultats["ROC-AUC"].values
     metrics_cols = ["Accuracy", "Précision (N)", "Rappel (N)", "F1-Score (N)", "ROC-AUC"]
 
-    fig = plt.figure(figsize=(28, 13))
+    fig = plt.figure(figsize=(20, 10))
     ax1 = fig.add_subplot(1, 2, 1)
     ax2 = fig.add_subplot(1, 2, 2, polar=True)
 
@@ -34,19 +34,19 @@ with tab1:
     largeur = 0.35
     b1 = ax1.bar(x - largeur/2, rappel, largeur, label="Rappel (N)", color="#D97706")
     b2 = ax1.bar(x + largeur/2, auc, largeur, label="ROC-AUC", color="#1E3A5F")
-    ax1.bar_label(b1, fmt="%.2f", padding=4, fontsize=24, fontweight="bold")
-    ax1.bar_label(b2, fmt="%.2f", padding=4, fontsize=24, fontweight="bold")
+    ax1.bar_label(b1, fmt="%.2f", padding=4, fontsize=18, fontweight="bold")
+    ax1.bar_label(b2, fmt="%.2f", padding=4, fontsize=18, fontweight="bold")
     ax1.set_xticks(x)
-    ax1.set_xticklabels(modeles, fontsize=22)
+    ax1.set_xticklabels(modeles, fontsize=16)
     ax1.set_ylim(0, 1)
-    ax1.set_ylabel("Score", fontsize=22)
-    ax1.tick_params(axis="y", labelsize=19)
+    ax1.set_ylabel("Score", fontsize=16)
+    ax1.tick_params(axis="y", labelsize=14)
     for spine in ["top", "right"]:
         ax1.spines[spine].set_visible(False)
     ax1.grid(axis="y", color="#e1e0d9", linewidth=0.7, zorder=0)
     ax1.set_axisbelow(True)
-    ax1.set_title("Rappel et ROC-AUC par modèle", fontsize=24, fontweight="bold", pad=20)
-    ax1.legend(loc="upper left", frameon=False, fontsize=19)
+    ax1.set_title("Rappel et ROC-AUC par modèle", fontsize=18, fontweight="bold", pad=18)
+    ax1.legend(loc="upper left", frameon=False, fontsize=14)
 
     angles = np.linspace(0, 2 * np.pi, len(metrics_cols), endpoint=False).tolist()
     angles += angles[:1]
@@ -55,21 +55,21 @@ with tab1:
     for _, row in resultats.iterrows():
         valeurs = row[metrics_cols].tolist()
         valeurs += valeurs[:1]
-        ax2.plot(angles, valeurs, linewidth=4, label=row["Modèle"], color=couleurs_modeles[row["Modèle"]])
+        ax2.plot(angles, valeurs, linewidth=3, label=row["Modèle"], color=couleurs_modeles[row["Modèle"]])
         ax2.fill(angles, valeurs, alpha=0.12, color=couleurs_modeles[row["Modèle"]])
 
     ax2.set_xticks(angles[:-1])
-    ax2.set_xticklabels(metrics_cols, fontsize=19)
+    ax2.set_xticklabels(metrics_cols, fontsize=14)
     ax2.set_ylim(0, 1)
     ax2.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
-    ax2.set_yticklabels(["0.2", "0.4", "0.6", "0.8", "1.0"], fontsize=13, color="#888")
-    ax2.set_title("Vue d'ensemble sur les 5 métriques", fontsize=24, fontweight="bold", pad=35)
-    ax2.legend(loc="upper right", bbox_to_anchor=(1.45, 1.15), frameon=False, fontsize=17)
+    ax2.set_yticklabels(["0.2", "0.4", "0.6", "0.8", "1.0"], fontsize=10, color="#888")
+    ax2.set_title("Vue d'ensemble sur les 5 métriques", fontsize=18, fontweight="bold", pad=28)
+    ax2.legend(loc="upper right", bbox_to_anchor=(1.4, 1.15), frameon=False, fontsize=12)
 
     definitions_txt = "Accuracy : % de dossiers bien classés au total (accordés + refusés)\nPrécision (N) : quand le modèle prédit refusé, part de fois où c'est vraiment le cas\nRappel (N) : part des dossiers réellement à risque que le modèle parvient à détecter\nF1-Score (N) : équilibre entre Précision et Rappel sur la classe refus, en une seule note\nROC-AUC : capacité globale du modèle à distinguer un dossier à risque d'un dossier sain"
-    fig.text(0.72, 0.02, definitions_txt, ha="center", va="bottom", fontsize=16, color="#333333", bbox=dict(boxstyle="round,pad=0.8", facecolor="#f9f9f7", edgecolor="#c3c2b7", linewidth=0.8), linespacing=1.9)
+    fig.text(0.72, 0.02, definitions_txt, ha="center", va="bottom", fontsize=12, color="#333333", bbox=dict(boxstyle="round,pad=0.7", facecolor="#f9f9f7", edgecolor="#c3c2b7", linewidth=0.8), linespacing=1.8)
 
-    plt.subplots_adjust(bottom=0.28, wspace=0.35)
+    plt.subplots_adjust(bottom=0.26, wspace=0.35)
     st.pyplot(fig)
 
     st.success("**Modèle retenu : Random Forest** — meilleur Rappel (65,8 %).")
@@ -90,7 +90,7 @@ with tab2:
     couleur_alerte = "#E8A33D"
     couleur_refus_ok = "#2a78d6"
 
-    fig2, ax3 = plt.subplots(figsize=(9, 7.5))
+    fig2, ax3 = plt.subplots(figsize=(8, 6.5))
     grille_couleurs = [[couleur_accord_ok, couleur_refus_injuste], [couleur_alerte, couleur_refus_ok]]
     texte_00 = "Accord Légitime\n\n" + str(tp) + " clients\n(" + str(round(tp/total*100, 1)) + "%)"
     texte_01 = "Refus Injustifié\n(Manque à gagner)\n\n" + str(fn) + " clients\n(" + str(round(fn/total*100, 1)) + "%)"
@@ -101,14 +101,14 @@ with tab2:
     for i in range(2):
         for j in range(2):
             ax3.add_patch(plt.Rectangle((j, 1 - i), 1, 1, facecolor=grille_couleurs[i][j], edgecolor="white", linewidth=3))
-            ax3.text(j + 0.5, 1 - i + 0.5, grille_texte[i][j], ha="center", va="center", fontsize=13, fontweight="bold", color="white")
+            ax3.text(j + 0.5, 1 - i + 0.5, grille_texte[i][j], ha="center", va="center", fontsize=12, fontweight="bold", color="white")
 
     ax3.set_xlim(0, 2)
     ax3.set_ylim(0, 2)
     ax3.set_xticks([0.5, 1.5])
-    ax3.set_xticklabels(["Predit : Accorde", "Predit : Refuse"], fontsize=11)
+    ax3.set_xticklabels(["Predit : Accorde", "Predit : Refuse"], fontsize=10)
     ax3.set_yticks([0.5, 1.5])
-    ax3.set_yticklabels(["Realite : MAUVAIS PAYEUR (N)", "Realite : BON PAYEUR (Y)"], fontsize=11)
+    ax3.set_yticklabels(["Realite : MAUVAIS PAYEUR (N)", "Realite : BON PAYEUR (Y)"], fontsize=10)
     ax3.tick_params(length=0)
     for spine in ax3.spines.values():
         spine.set_visible(False)
